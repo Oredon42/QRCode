@@ -1,72 +1,56 @@
+from utils.structures import *
+
 import math as m
 import numpy as np
 
-alignment_patterns_center_coordinates = [
-    (), # Version 1
-    (6, 18), # Version 2
-    (6, 22), # Version 3
-    (6, 26), # Version 4
-    (6, 30), # Version 5
-    (6, 34), # Version 6
-    (6, 22, 38), # Version 7
-    (6, 24, 42), # Version 8
-    (6, 26, 46), # Version 9
-    (6, 28, 50), # Version 10
-    (6, 30, 54), # Version 11
-    (6, 32, 58), # Version 12
-    (6, 34, 62), # Version 13
-    (6, 26, 46, 66), # Version 14
-    (6, 26, 48, 70), # Version 15
-    (6, 26, 50, 74), # Version 16
-    (6, 30, 54, 78), # Version 17
-    (6, 30, 46, 82), # Version 18
-    (6, 30, 56, 86), # Version 19
-    (6, 34, 58, 90), # Version 20
-    (6, 28, 50, 72, 94), # Version 21
-    (6, 26, 50, 74, 98), # Version 22
-    (6, 30, 54, 78, 102), # Version 23
-    (6, 28, 54, 80, 106), # Version 24
-    (6, 32, 58, 84, 110), # Version 25
-    (6, 30, 58, 86, 114), # Version 26
-    (6, 34, 62, 90, 118), # Version 27
-    (6, 26, 50, 74, 98, 122), # Version 28
-    (6, 30, 54, 78, 102, 126), # Version 29
-    (6, 26, 52, 78, 104, 130), # Version 30
-    (6, 30, 56, 82, 108, 134), # Version 31
-    (6, 34, 60, 86, 112, 138), # Version 32
-    (6, 30, 58, 86, 114, 142), # Version 33
-    (6, 34, 62, 90, 118, 146), # Version 34
-    (6, 30, 54, 78, 102, 126, 150), # Version 35
-    (6, 24, 50, 76, 102, 128, 154), # Version 36
-    (6, 28, 54, 80, 106, 132, 158), # Version 37
-    (6, 32, 58, 84, 110, 136, 162), # Version 38
-    (6, 26, 54, 82, 110, 138, 166), # Version 39
-    (6, 30, 58, 86, 114, 142, 170) # Version 40
-]
+# Coordinates elements of alignment patterns centers in QRCode for each version
+# Actual coordinates are the combinatorial of these elements
+alignment_patterns_center_coordinates = {
+    1: (),
+    2: (6, 18),
+    3: (6, 22),
+    4: (6, 26),
+    5: (6, 30),
+    6: (6, 34),
+    7: (6, 22, 38),
+    8: (6, 24, 42),
+    9: (6, 26, 46),
+    10: (6, 28, 50),
+    11: (6, 30, 54),
+    12: (6, 32, 58),
+    13: (6, 34, 62),
+    14: (6, 26, 46, 66),
+    15: (6, 26, 48, 70),
+    16: (6, 26, 50, 74),
+    17: (6, 30, 54, 78),
+    18: (6, 30, 46, 82),
+    19: (6, 30, 56, 86),
+    20: (6, 34, 58, 90),
+    21: (6, 28, 50, 72, 94),
+    22: (6, 26, 50, 74, 98),
+    23: (6, 30, 54, 78, 102),
+    24: (6, 28, 54, 80, 106),
+    25: (6, 32, 58, 84, 110),
+    26: (6, 30, 58, 86, 114),
+    27: (6, 34, 62, 90, 118),
+    28: (6, 26, 50, 74, 98, 122),
+    29: (6, 30, 54, 78, 102, 126),
+    30: (6, 26, 52, 78, 104, 130),
+    31: (6, 30, 56, 82, 108, 134),
+    32: (6, 34, 60, 86, 112, 138),
+    33: (6, 30, 58, 86, 114, 142),
+    34: (6, 34, 62, 90, 118, 146),
+    35: (6, 30, 54, 78, 102, 126, 150),
+    36: (6, 24, 50, 76, 102, 128, 154),
+    37: (6, 28, 54, 80, 106, 132, 158),
+    38: (6, 32, 58, 84, 110, 136, 162),
+    39: (6, 26, 54, 82, 110, 138, 166),
+    40: (6, 30, 58, 86, 114, 142, 170)
+}
 
-class ErrorCorrectionLevel:
-    L = 0
-    M = 1
-    Q = 2
-    H = 3
 
-class GroupInformation:
-    def __init__(self, blocks_count, data_codewords_count):
-        self.blocks_count = blocks_count
-        self.data_codewords_count = data_codewords_count
-
-class DataInformation:
-    def __init__(self, error_correction_codewords_per_block, groups_informations):
-        self.error_correction_codewords_per_block = error_correction_codewords_per_block
-        self.groups_informations = groups_informations
-
-    def getDataCapacityBits(self):
-        data_capacity = 0
-        for infos in self.groups_informations:
-            data_capacity += infos.blocks_count * infos.data_codewords_count
-
-        return data_capacity * 8
-
+# Gives the number of error correction codewords and data codewords
+# of each data group/bloc for each ErrorCorrectionLevel and version
 data_informations = {
     ErrorCorrectionLevel.L: {
         1: DataInformation(7, (GroupInformation(1, 19),)),
@@ -238,6 +222,8 @@ data_informations = {
     }
 }
 
+
+# Remainders bits count after message stream for each version
 symbol_remainder_bits = {
     1: 0,
     2: 7,
@@ -281,109 +267,57 @@ symbol_remainder_bits = {
     40: 0
 }
 
-symbol_capacity_codewords = {
-    1: 26,
-    2: 44,
-    3: 70,
-    4: 100,
-    5: 134,
-    6: 172,
-    7: 196,
-    8: 242,
-    9: 292,
-    10: 346,
-    11: 404,
-    12: 466,
-    13: 532,
-    14: 581,
-    15: 655,
-    16: 733,
-    17: 815,
-    18: 901,
-    19: 991,
-    20: 1085,
-    21: 1156,
-    22: 1258,
-    23: 1364,
-    24: 1474,
-    25: 1588,
-    26: 1706,
-    27: 1828,
-    28: 1921,
-    29: 2051,
-    30: 2185,
-    31: 2323,
-    32: 2465,
-    33: 2611,
-    34: 2761,
-    35: 2876,
-    36: 3034,
-    37: 3196,
-    38: 3362,
-    39: 3532,
-    40: 3706
-}
 
+# Encoding value for each alphanumeric character
 alphanumeric_encoding_table = {
-    '0': 0,
-    '1': 1,
-    '2': 2,
-    '3': 3,
-    '4': 4,
-    '5': 5,
-    '6': 6,
-    '7': 7,
-    '8': 8,
-    '9': 9,
-    'A': 10,
-    'B': 11,
-    'C': 12,
-    'D': 13,
-    'E': 14,
-    'F': 15,
-    'G': 16,
-    'H': 17,
-    'I': 18,
-    'J': 19,
-    'K': 20,
-    'L': 21,
-    'M': 22,
-    'N': 23,
-    'O': 24,
-    'P': 25,
-    'Q': 26,
-    'R': 27,
-    'S': 28,
-    'T': 29,
-    'U': 30,
-    'V': 31,
-    'W': 32,
-    'X': 33,
-    'Y': 34,
-    'Z': 35,
-    ' ': 36,
-    '$': 37,
-    '%': 38,
-    '*': 39,
-    '+': 40,
-    '-': 41,
-    '.': 42,
-    '/': 43,
-    ':': 44
+    "0": 0,
+    "1": 1,
+    "2": 2,
+    "3": 3,
+    "4": 4,
+    "5": 5,
+    "6": 6,
+    "7": 7,
+    "8": 8,
+    "9": 9,
+    "A": 10,
+    "B": 11,
+    "C": 12,
+    "D": 13,
+    "E": 14,
+    "F": 15,
+    "G": 16,
+    "H": 17,
+    "I": 18,
+    "J": 19,
+    "K": 20,
+    "L": 21,
+    "M": 22,
+    "N": 23,
+    "O": 24,
+    "P": 25,
+    "Q": 26,
+    "R": 27,
+    "S": 28,
+    "T": 29,
+    "U": 30,
+    "V": 31,
+    "W": 32,
+    "X": 33,
+    "Y": 34,
+    "Z": 35,
+    " ": 36,
+    "$": 37,
+    "%": 38,
+    "*": 39,
+    "+": 40,
+    "-": 41,
+    ".": 42,
+    "/": 43,
+    ":": 44
 }
 
-class ModeIndicator:
-    Terminator          = '0000'
-    Numeric             = '0001'
-    Alphanumeric        = '0010'
-    StructuredAppend    = '0011'
-    Byte8Bit            = '0100'
-    FNC1_1              = '0101'
-    ECI                 = '0111'
-    Kanji               = '1000'
-    FNC1_2              = '1001'
-
-# Character count bytes stream size in bits depending on version:
+# "Character count" bytes stream size in bits depending on mode and version:
 #  -1st element: version 1 to 9
 #  -2nd element: version 10 to 26
 #  -3rd element: version 27 to 40
@@ -394,6 +328,9 @@ character_count_number_of_bits = {
     ModeIndicator.Kanji: [8, 10, 12]
 }
 
+
+# Max characters capacity of symbol for each version
+# And for each data type
 symbol_capacity_characters = {
     ErrorCorrectionLevel.L:
     {
@@ -569,49 +506,14 @@ symbol_capacity_characters = {
     }
 }
 
-class ECIIndicators:
-    Code_page_437 = ('cp437', b'\x00') # English
-    ISO_IEC_8859_1 = ('latin_1', b'\x01') # Western Europe
-    ISO_IEC_8859_2 = ('iso8859_2', b'\x04') # Central and Eastern Europe
-    ISO_IEC_8859_3 = ('iso8859_3', b'\x05') # Esperanto, Maltese
-    ISO_IEC_8859_4 = ('iso8859_4', b'\x06') # Baltic languages
-    ISO_IEC_8859_5 = ('iso8859_5', b'\x07') # Bulgarian, Byelorussian, Macedonian, Russian, Serbian
-    ISO_IEC_8859_6 = ('iso8859_6', b'\x08') # Arabic
-    ISO_IEC_8859_7 = ('iso8859_7', b'\x09') # Greek
-    ISO_IEC_8859_8 = ('iso8859_8', b'\x0A') # Hebrew
-    ISO_IEC_8859_9 = ('iso8859_9', b'\x0B') # Turkish
-    ISO_IEC_8859_10 = ('iso8859_10', b'\x0C') # Nordic languages
-    ISO_IEC_8859_11 = ('iso8859_11', b'\x0D') # Thai languages
-    ISO_IEC_8859_13 = ('iso8859_13', b'\x0F') # Baltic languages
-    ISO_IEC_8859_14 = ('iso8859_14', b'\x10') # Celtic languages
-    ISO_IEC_8859_15 = ('iso8859_15', b'\x11') # Western Europe
-    ISO_IEC_8859_16 = ('iso8859_16', b'\x12') # South-Eastern Europe
-    Shift_JIS = ('shift_jis', b'\x13') # Japanese
-    Windows_1250 = ('cp1250', b'\x14') # Central and Eastern Europe
-    Windows_1251 = ('cp1251', b'\x15') # Bulgarian, Byelorussian, Macedonian, Russian, Serbian
-    Windows_1252 = ('cp1252', b'\x16') # Western Europe
-    Windows_1256 = ('cp1256', b'\x17') # Arabic
-    UTF_16 = ('utf_16', b'\x18') # all languages
-    UTF_8 = ('utf_8', b'\x19') # all languages
-    US_ASCII = ('ascii', b'\x1A') # English
-    Big5 = ('big5', b'\x1B') # Traditional Chinese
-    GB_18030 = ('gb18030', b'\x1C') # Unified Chinese
-    EUC_KR = ('euc_kr', b'\x1D') # Korean
 
+# Exponent and log table used for Reed-Solomon error correction algorithm
+# These tables are used to convert polynomials from exponent representation to coefficient representation and vice-versa
 exponents_table = [None, 0, 1, 25, 2, 50, 26, 198, 3, 223, 51, 238, 27, 104, 199, 75, 4, 100, 224, 14, 52, 141, 239, 129, 28, 193, 105, 248, 200, 8, 76, 113, 5, 138, 101, 47, 225, 36, 15, 33, 53, 147, 142, 218, 240, 18, 130, 69, 29, 181, 194, 125, 106, 39, 249, 185, 201, 154, 9, 120, 77, 228, 114, 166, 6, 191, 139, 98, 102, 221, 48, 253, 226, 152, 37, 179, 16, 145, 34, 136, 54, 208, 148, 206, 143, 150, 219, 189, 241, 210, 19, 92, 131, 56, 70, 64, 30, 66, 182, 163, 195, 72, 126, 110, 107, 58, 40, 84, 250, 133, 186, 61, 202, 94, 155, 159, 10, 21, 121, 43, 78, 212, 229, 172, 115, 243, 167, 87, 7, 112, 192, 247, 140, 128, 99, 13, 103, 74, 222, 237, 49, 197, 254, 24, 227, 165, 153, 119, 38, 184, 180, 124, 17, 68, 146, 217, 35, 32, 137, 46, 55, 63, 209, 91, 149, 188, 207, 205, 144, 135, 151, 178, 220, 252, 190, 97, 242, 86, 211, 171, 20, 42, 93, 158, 132, 60, 57, 83, 71, 109, 65, 162, 31, 45, 67, 216, 183, 123, 164, 118, 196, 23, 73, 236, 127, 12, 111, 246, 108, 161, 59, 82, 41, 157, 85, 170, 251, 96, 134, 177, 187, 204, 62, 90, 203, 89, 95, 176, 156, 169, 160, 81, 11, 245, 22, 235, 122, 117, 44, 215, 79, 174, 213, 233, 230, 231, 173, 232, 116, 214, 244, 234, 168, 80, 88, 175]
 logs_table = [1, 2, 4, 8, 16, 32, 64, 128, 29, 58, 116, 232, 205, 135, 19, 38, 76, 152, 45, 90, 180, 117, 234, 201, 143, 3, 6, 12, 24, 48, 96, 192, 157, 39, 78, 156, 37, 74, 148, 53, 106, 212, 181, 119, 238, 193, 159, 35, 70, 140, 5, 10, 20, 40, 80, 160, 93, 186, 105, 210, 185, 111, 222, 161, 95, 190, 97, 194, 153, 47, 94, 188, 101, 202, 137, 15, 30, 60, 120, 240, 253, 231, 211, 187, 107, 214, 177, 127, 254, 225, 223, 163, 91, 182, 113, 226, 217, 175, 67, 134, 17, 34, 68, 136, 13, 26, 52, 104, 208, 189, 103, 206, 129, 31, 62, 124, 248, 237, 199, 147, 59, 118, 236, 197, 151, 51, 102, 204, 133, 23, 46, 92, 184, 109, 218, 169, 79, 158, 33, 66, 132, 21, 42, 84, 168, 77, 154, 41, 82, 164, 85, 170, 73, 146, 57, 114, 228, 213, 183, 115, 230, 209, 191, 99, 198, 145, 63, 126, 252, 229, 215, 179, 123, 246, 241, 255, 227, 219, 171, 75, 150, 49, 98, 196, 149, 55, 110, 220, 165, 87, 174, 65, 130, 25, 50, 100, 200, 141, 7, 14, 28, 56, 112, 224, 221, 167, 83, 166, 81, 162, 89, 178, 121, 242, 249, 239, 195, 155, 43, 86, 172, 69, 138, 9, 18, 36, 72, 144, 61, 122, 244, 245, 247, 243, 251, 235, 203, 139, 11, 22, 44, 88, 176, 125, 250, 233, 207, 131, 27, 54, 108, 216, 173, 71, 142, 1]  
 
-# def generateTables():
 
-#     logs_table = [1] * 256
-#     exponents_table = [None] * 256
-#     for i in range(255):
-#         logs_table[i+1] = 2 * logs_table[i]
-#         if logs_table[i+1] > 255:
-#             logs_table[i+1] = logs_table[i+1] ^ 285
-#         exponents_table[logs_table[i+1]] = i+1
-#     exponents_table[1] = 0
-
+# Alpha exponents of generator polynomial for each generator size
 generator_polynomials = {
     7: [0, 87, 229, 146, 149, 238, 102, 21],
     10: [0, 251, 67, 46, 61, 118, 70, 64, 94, 32, 45],
@@ -646,15 +548,8 @@ generator_polynomials = {
     68: [0, 247, 159, 223, 33, 224, 93, 77, 70, 90, 160, 32, 254, 43, 150, 84, 101, 190, 205, 133, 52, 60, 202, 165, 220, 203, 151, 93, 84, 15, 84, 253, 173, 160, 89, 227, 52, 199, 97, 95, 231, 52, 177, 51, 125, 137, 241, 166, 225, 118, 2, 54, 32, 82, 215, 175, 198, 43, 238, 235, 27, 101, 184, 127, 3, 5, 8, 163, 238]
 }
 
-class ModuleType:
-    Data=-1
-    Dark=0
-    Light=1
-    FormatInformation=2
-    Version=3
-    Pouet=200
-    Toto=50
 
+# Modules patterns representing finder part of the symbol
 finder_pattern = np.array([
     [ModuleType.Dark, ModuleType.Dark, ModuleType.Dark, ModuleType.Dark, ModuleType.Dark, ModuleType.Dark, ModuleType.Dark],
     [ModuleType.Dark, ModuleType.Light, ModuleType.Light, ModuleType.Light, ModuleType.Light, ModuleType.Light, ModuleType.Dark],
@@ -665,6 +560,8 @@ finder_pattern = np.array([
     [ModuleType.Dark, ModuleType.Dark, ModuleType.Dark, ModuleType.Dark, ModuleType.Dark, ModuleType.Dark, ModuleType.Dark],
 ])
 
+
+# Modules patterns representing alignment part of the symbol
 alignment_pattern = np.array([
     [ModuleType.Dark, ModuleType.Dark, ModuleType.Dark, ModuleType.Dark, ModuleType.Dark],
     [ModuleType.Dark, ModuleType.Light, ModuleType.Light, ModuleType.Light, ModuleType.Dark],
@@ -673,6 +570,8 @@ alignment_pattern = np.array([
     [ModuleType.Dark, ModuleType.Dark, ModuleType.Dark, ModuleType.Dark, ModuleType.Dark]
 ])
 
+
+# 8 functions used to mask data in symbol
 mask_patterns = [
     lambda col,row: ((row+col) % 2) == 0,
     lambda _,row: (row % 2) == 0,
@@ -684,6 +583,8 @@ mask_patterns = [
     lambda col,row: ((((row+col) % 2) + ((row*col) % 3)) % 2) == 0
 ]
 
+
+# Format information modules patterns for each ErrorCorrectionLevel
 format_information_bits = {
     ErrorCorrectionLevel.L: [
         np.array([[ModuleType.Dark, ModuleType.Dark, ModuleType.Dark, ModuleType.Light, ModuleType.Dark, ModuleType.Dark, ModuleType.Dark, ModuleType.Dark, ModuleType.Dark, ModuleType.Light, ModuleType.Light, ModuleType.Light, ModuleType.Dark, ModuleType.Light, ModuleType.Light]]),
@@ -727,6 +628,8 @@ format_information_bits = {
     ]
 }
 
+
+# Version information modules patterns for each version
 version_information_bits = {
     7: np.array([[ModuleType.Light, ModuleType.Light, ModuleType.Dark], [ModuleType.Light, ModuleType.Dark, ModuleType.Light], [ModuleType.Light, ModuleType.Dark, ModuleType.Light], [ModuleType.Light, ModuleType.Dark, ModuleType.Dark], [ModuleType.Dark, ModuleType.Dark, ModuleType.Dark], [ModuleType.Light, ModuleType.Light, ModuleType.Light]]),
     8: np.array([[ModuleType.Light, ModuleType.Light, ModuleType.Dark], [ModuleType.Dark, ModuleType.Dark, ModuleType.Dark], [ModuleType.Light, ModuleType.Dark, ModuleType.Dark], [ModuleType.Light, ModuleType.Dark, ModuleType.Light], [ModuleType.Light, ModuleType.Light, ModuleType.Light], [ModuleType.Dark, ModuleType.Light, ModuleType.Light]]),
@@ -763,67 +666,3 @@ version_information_bits = {
     39: np.array([[ModuleType.Dark, ModuleType.Light, ModuleType.Light], [ModuleType.Light, ModuleType.Light, ModuleType.Light], [ModuleType.Dark, ModuleType.Light, ModuleType.Dark], [ModuleType.Light, ModuleType.Dark, ModuleType.Light], [ModuleType.Dark, ModuleType.Dark, ModuleType.Dark], [ModuleType.Light, ModuleType.Light, ModuleType.Dark]]),
     40: np.array([[ModuleType.Dark, ModuleType.Light, ModuleType.Light], [ModuleType.Dark, ModuleType.Light, ModuleType.Dark], [ModuleType.Dark, ModuleType.Light, ModuleType.Light], [ModuleType.Light, ModuleType.Dark, ModuleType.Dark], [ModuleType.Light, ModuleType.Light, ModuleType.Light], [ModuleType.Dark, ModuleType.Light, ModuleType.Dark]])
 }
-
-def getWidth(version):
-    return 21+(version-1)*4
-
-def getAlignmentPatternCoordinatesList(version):
-
-    coordinates_list = []
-
-    elements = alignment_patterns_center_coordinates[version-1]
-
-    for i in range(len(elements)):
-        elemA = elements[i]
-        for j in range(len(elements)):
-            elemB = elements[j]
-
-            coordinates_list.append((elemA, elemB))
-            
-    return coordinates_list
-
-def determineVersion(text: str, mode: ModeIndicator, correction_level: ErrorCorrectionLevel):
-    ''' Returns smallest version matching text size depending on mode. '''
-    
-    version = 1
-
-    char_count = len(text)
-
-    while version < 40:
-        if char_count <= symbol_capacity_characters[correction_level][version][mode]:
-            break
-        version += 1
-
-    return version
-
-def getStreamSizeInBits(text, mode, version):
-    return getEncodedDataSizeBits(text, mode) + getCodeLengthSizeBits(mode, version)
-
-def getEncodedDataSizeBits(text: str, mode: ModeIndicator) -> int:
-    ''' Returns text encoded size in bits depending on mode. '''
-
-    D = len(text)
-    if mode == ModeIndicator.Numeric:
-        R = 0 if (D % 3) == 0 else 1 if (D % 3) == 1 else 2
-        return m.floor(D/3) * 10 + R
-    elif mode == ModeIndicator.Alphanumeric:
-        return m.ceil(len(text)/2*11)
-    elif mode == ModeIndicator.Byte8Bit:
-        return D*8
-    elif mode == ModeIndicator.Kanji:
-        return D*13
-    else:
-        print("Invalid ModeIndicator")
-        return -1
-
-def getCodeLengthSizeBits(mode: ModeIndicator, version: int) -> int:
-    ''' Returns characters count bytes stream size in bits
-        depending on version. '''
-    
-    if version <= 9:
-        return character_count_number_of_bits[mode][0]
-    elif version <= 26:
-        return character_count_number_of_bits[mode][1]
-    else:
-        return character_count_number_of_bits[mode][2]
-    
