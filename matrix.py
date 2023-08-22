@@ -12,7 +12,14 @@ class Matrix:
     alignment_pattern_width = 5
     separator_width = 1
 
-    def __init__(self, data_bits: BitsArray, version: int, correction_level: ErrorCorrectionLevel) -> None:
+    def __init__(self) -> None:
+        self.size = 0
+        self.data = np.array([])
+    
+    def generate(self, data_bits: BitsArray, version: int, correction_level: ErrorCorrectionLevel) -> None:
+        """ Generate QRCode symbol matrix from data bits, version and correction level.
+            Write all patterns, fill data modules and select best mask. """
+
         self.version = version
         self.correction_level = correction_level
         self.size = getSymbolWidth(version)

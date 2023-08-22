@@ -10,9 +10,8 @@ This project is an implementation of the standard QRCode encoding in Python. Thi
   * Alphanumeric text
   * Latin1 text
   * Kanji text
+* Pixmap and Vectorial image saving
 
 ## Future work
 * Decoding
-* Image resizing
 * Image incorporation
-* Vectorial image saving

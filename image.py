@@ -25,6 +25,11 @@ class Image:
         """ Returns the height of the image. """
 
         return self.data.shape[1]
+    
+    def resize(self, width, height) -> None:
+        """ Resize image to given width and height using nearest neighbor interpolation. """
+
+        self.data = cv2.resize(self.data, (width, height), interpolation=cv2.INTER_NEAREST)
 
     def overwriteSubregion(self, leftX: int, topY: int, overwrite_image) -> None:
         """ Overwrites a subregion of the image starting at coordinates (leftX, topY)
